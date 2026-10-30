@@ -10,5 +10,19 @@
       "/api/*",
       "/health"
     ]
+  },
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "VISITOR_COUNTER",
+        "class_name": "VisitorCounter"
+      }
+    ]
+  },
+  "exports": {
+    "VisitorCounter": {
+      "type": "durable-object",
+      "storage": "sqlite"
+    }
   }
 }
