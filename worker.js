@@ -350,15 +350,89 @@ function json(data, status = 200, cacheSeconds = 900) {
         status,
         headers: {
             "Content-Type": "application/json; charset=utf-8",
-            "Cache-Control": `public, max-age=0, s-maxage=${cacheSeconds}`,
+            "Cache-Control": cacheSeconds === 0
+                ? "no-store"
+                : `public, max-age=0, s-maxage=${cacheSeconds}`,
             "Access-Control-Allow-Origin": "*"
         }
     });
 }
 
-export default {
+export class VisitorCounter extends DurableObject {
+    constructor(ctx, env) {
+        super(ctx, env);
+
+        this.ctx.storage.sql.exec(`
+            CREATE TABLE IF NOT EXISTS site_counter (
+                name TEXT PRIMARY KEY,
+                value INTEGER NOT NULL DEFAULT 0
+            )
+        `);
+
+        this.ctx.storage.sql.exec(
+            "INSERT OR IGNORE INTO site_counter (name, value) VALUES ('visits', 0)"
+        );
+    }
+
     async fetch(request) {
+        if (request.method === "POST") {
+            const row = this.ctx.storage.sql.exec(
+                "UPDATE site_counter SET value = value + 1 WHERE name = 'visits' RETURNING value"
+            ).one();
+
+            return Response.json({ visits: row.value }, {
+                headers: { "Cache-Control": "no-store" }
+            });
+        }
+
+        if (request.method === "GET") {
+            const row = this.ctx.storage.sql.exec(
+                "SELECT value FROM site_counter WHERE name = 'visits'"
+            ).one();
+
+            return Response.json({ visits: row.value }, {
+                headers: { "Cache-Control": "no-store" }
+            });
+        }
+
+        return Response.json({ error: "Method not allowed" }, { status: 405 });
+    }
+}
+
+export default {
+    async fetch(request, env) {
         const url = new URL(request.url);
+
+        if (url.pathname === "/api/visits") {
+            if (request.method !== "GET" && request.method !== "POST") {
+                return json({ error: "Method not allowed" }, 405, 0);
+            }
+
+            try {
+                const id = env.VISITOR_COUNTER.idFromName("satyra24-global-counter");
+                const counter = env.VISITOR_COUNTER.get(id);
+                const response = await counter.fetch(
+                    "https://visitor-counter.internal/count",
+                    { method: request.method }
+                );
+                const result = await response.json();
+
+                if (!response.ok || !Number.isSafeInteger(result.visits)) {
+                    throw new Error("Nieprawidłowa odpowiedź licznika.");
+                }
+
+                return json({
+                    portal: "SATYRA24",
+                    visits: result.visits
+                }, 200, 0);
+            } catch (error) {
+                return json({
+                    portal: "SATYRA24",
+                    error: "Licznik odwiedzin jest chwilowo niedostępny.",
+                    details: error.message
+                }, 502, 0);
+            }
+        }
 
         if (request.method !== "GET") {
             return json({ error: "Method not allowed" }, 405);
