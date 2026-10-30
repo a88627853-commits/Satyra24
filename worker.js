@@ -7,7 +7,6 @@ const FEEDS = [
 ];
 
 const MAX_NEWS = 50;
-const CACHE_SECONDS = 900;
 
 function decodeXML(text) {
     return text
@@ -30,8 +29,13 @@ function decodeXML(text) {
 
 function getTag(xml, tag) {
     const escaped = tag.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
     const match = xml.match(
-        new RegExp("<" + escaped + "(?:\\s[^>]*)?>([\\s\\S]*?)</" + escaped + "\\s*>", "i")
+        new RegExp(
+            "<" + escaped + "(?:\\s[^>]*)?>([\\s\\S]*?)</" +
+            escaped + "\\s*>",
+            "i"
+        )
     );
 
     return match ? decodeXML(match[1]) : "";
@@ -76,7 +80,7 @@ function parseFeed(xml, source) {
 
         return {
             title,
-            description: description.slice(0, 250),
+            description: description.slice(0, 500),
             url: link,
             source,
             published: Number.isFinite(timestamp)
@@ -96,14 +100,10 @@ async function fetchFeed(feed) {
     });
 
     if (!response.ok) {
-        throw new Error(
-            feed.name + " HTTP " + response.status
-        );
+        throw new Error(feed.name + " HTTP " + response.status);
     }
 
-    const xml = await response.text();
-
-    return parseFeed(xml, feed.name);
+    return parseFeed(await response.text(), feed.name);
 }
 
 async function getNews() {
@@ -135,12 +135,72 @@ async function getNews() {
         .slice(0, MAX_NEWS);
 }
 
-function json(data, status = 200) {
+async function getPrices() {
+    const response = await fetch(
+        "https://benzynamapa.pl/data/stats_latest.json",
+        {
+            headers: {
+                "Accept": "application/json"
+            },
+            signal: AbortSignal.timeout(10000)
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("BenzynaMAPA HTTP " + response.status);
+    }
+
+    const data = await response.json();
+
+    if (!data.averages) {
+        throw new Error("Nieprawidłowe dane cenowe");
+    }
+
+    const definitions = [
+        { id: "pb95", name: "Benzyna Pb95", unit: "zł/l" },
+        { id: "pb98", name: "Benzyna Pb98", unit: "zł/l" },
+        { id: "on", name: "Diesel", unit: "zł/l" },
+        { id: "lpg", name: "LPG", unit: "zł/l" }
+    ];
+
+    const fuels = definitions.map(item => {
+        const value = Number(data.averages[item.id]);
+
+        return {
+            ...item,
+            value: Number.isFinite(value) && value > 0
+                ? value
+                : null,
+            trend7d: Number.isFinite(Number(data.trend_7d?.[item.id]))
+                ? Number(data.trend_7d[item.id])
+                : null
+        };
+    });
+
+    return {
+        portal: "SATYRA24",
+        updated: data.last_updated || null,
+        source: {
+            name: "BenzynaMAPA.pl",
+            url: "https://benzynamapa.pl"
+        },
+        fuels,
+        stations: data.total_stations || null,
+        grainMarket: {
+            status: "not_connected",
+            message: "Dane cen skupu zbóż wymagają osobnej integracji.",
+            source: "Zintegrowany System Rolniczej Informacji Rynkowej",
+            url: "https://zsrir.minrol.gov.pl/data"
+        }
+    };
+}
+
+function json(data, status = 200, cache = 900) {
     return new Response(JSON.stringify(data, null, 2), {
         status,
         headers: {
             "Content-Type": "application/json; charset=utf-8",
-            "Cache-Control": "public, max-age=0, s-maxage=900",
+            "Cache-Control": `public, max-age=0, s-maxage=${cache}`,
             "Access-Control-Allow-Origin": "*"
         }
     });
@@ -151,9 +211,7 @@ export default {
         const url = new URL(request.url);
 
         if (request.method !== "GET") {
-            return json({
-                error: "Method not allowed"
-            }, 405);
+            return json({ error: "Method not allowed" }, 405);
         }
 
         if (url.pathname === "/health") {
@@ -163,13 +221,7 @@ export default {
             });
         }
 
-        if (url.pathname !== "/api/news") {
-            return json({
-                error: "Not found"
-            }, 404);
-        }
-
-        try {
+        if (url.pathname === "/api/news") {
             const news = await getNews();
 
             return json({
@@ -179,14 +231,20 @@ export default {
                 updated: new Date().toISOString(),
                 articles: news
             });
-
-        } catch (error) {
-            return json({
-                portal: "SATYRA24",
-                error: "Nie udało się pobrać wiadomości",
-                details: error.message,
-                articles: []
-            }, 502);
         }
+
+        if (url.pathname === "/api/prices") {
+            try {
+                return json(await getPrices(), 200, 3600);
+            } catch (error) {
+                return json({
+                    portal: "SATYRA24",
+                    error: "Nie udało się pobrać cen paliw",
+                    details: error.message
+                }, 502, 60);
+            }
+        }
+
+        return json({ error: "Not found" }, 404);
     }
 };
