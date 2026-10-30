@@ -1,0 +1,292 @@
+
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SATYRA24 – Portal Rolniczy</title>
+<style>
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    background: #f2f4f1;
+    color: #202820;
+    font-family: Arial, sans-serif;
+}
+
+header {
+    background: #174b2b;
+    color: white;
+    padding: 25px 7%;
+}
+
+.logo {
+    font-size: 38px;
+    font-weight: 900;
+    letter-spacing: 2px;
+}
+
+header p { margin-bottom: 0; color: #d7ead8; }
+
+nav {
+    background: #10391f;
+    padding: 13px 7%;
+    color: white;
+}
+
+main {
+    max-width: 1150px;
+    margin: 30px auto;
+    padding: 0 18px;
+}
+
+.top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+h1 { font-size: 27px; }
+
+#status {
+    color: #53705a;
+    font-size: 13px;
+}
+
+button {
+    background: #21633a;
+    color: white;
+    border: 0;
+    border-radius: 5px;
+    padding: 11px 17px;
+    cursor: pointer;
+}
+
+button:hover { background: #174b2b; }
+
+#search {
+    width: 100%;
+    padding: 14px;
+    margin: 15px 0 25px;
+    border: 1px solid #ccd5cc;
+    border-radius: 5px;
+    font-size: 15px;
+}
+
+#articles {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 18px;
+}
+
+.article {
+    background: white;
+    border-radius: 7px;
+    padding: 21px;
+    border: 1px solid #e0e5df;
+    box-shadow: 0 2px 8px #00000008;
+}
+
+.article h2 {
+    font-size: 19px;
+    line-height: 1.4;
+    margin-top: 10px;
+}
+
+.article p {
+    color: #59645b;
+    line-height: 1.55;
+}
+
+.article a {
+    color: #21633a;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.article a:hover { text-decoration: underline; }
+
+.meta {
+    color: #7b887c;
+    font-size: 12px;
+}
+
+#message {
+    background: white;
+    padding: 25px;
+    border-radius: 7px;
+    text-align: center;
+    grid-column: 1 / -1;
+}
+
+footer {
+    background: #10391f;
+    color: #d7ead8;
+    padding: 25px 7%;
+    margin-top: 50px;
+    text-align: center;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="logo">SATYRA24</div>
+    <p>Aktualności ze świata polskiego rolnictwa</p>
+</header>
+
+<nav>
+    POLSKIE ROLNICTWO | RYNEK | MASZYNY | UPRAWY | HODOWLA
+</nav>
+
+<main>
+    <div class="top">
+        <div>
+            <h1>Najnowsze wiadomości</h1>
+            <div id="status">Łączenie z SATYRA24 API...</div>
+        </div>
+        <button onclick="loadNews()">Odśwież wiadomości</button>
+    </div>
+
+    <input
+        id="search"
+        type="search"
+        placeholder="Szukaj wiadomości..."
+        oninput="renderNews()"
+    >
+
+    <section id="articles">
+        <div id="message">Pobieranie aktualności...</div>
+    </section>
+</main>
+
+<footer>
+    <strong>SATYRA24</strong>
+    <p>Portal informacyjny o polskim rolnictwie.</p>
+    <small>Wiadomości pochodzą z zewnętrznych źródeł.
+    Czytaj pełne artykuły u ich wydawców.</small>
+</footer>
+
+<script>
+const API_URL =
+    "https://satyra24.kemeni69.workers.dev/api/news";
+
+let allArticles = [];
+
+async function loadNews() {
+    const status = document.getElementById("status");
+    const container = document.getElementById("articles");
+
+    status.textContent = "Pobieranie aktualności...";
+
+    try {
+        const response = await fetch(API_URL);
+
+        if (!response.ok) {
+            throw new Error("HTTP " + response.status);
+        }
+
+        const data = await response.json();
+
+        if (!Array.isArray(data.articles)) {
+            throw new Error("Nieprawidłowa odpowiedź API");
+        }
+
+        allArticles = data.articles;
+
+        status.textContent =
+            "Połączono z API • " + data.count +
+            " wiadomości • Aktualizacja: " +
+            new Date(data.updated).toLocaleTimeString("pl-PL");
+
+        renderNews();
+
+    } catch (error) {
+        status.textContent = "Błąd połączenia z API";
+
+        container.innerHTML =
+            '<div id="message">Nie udało się pobrać wiadomości. ' +
+            'Spróbuj ponownie za chwilę.</div>';
+
+        console.error(error);
+    }
+}
+
+function renderNews() {
+    const container = document.getElementById("articles");
+    const query = document.getElementById("search")
+        .value.toLowerCase();
+
+    const filtered = allArticles.filter(article =>
+        (article.title + " " + article.description + " " +
+        article.source).toLowerCase().includes(query)
+    );
+
+    container.replaceChildren();
+
+    if (filtered.length === 0) {
+        container.innerHTML =
+            '<div id="message">Nie znaleziono wiadomości.</div>';
+        return;
+    }
+
+    filtered.forEach(article => {
+        const card = document.createElement("article");
+        card.className = "article";
+
+        const meta = document.createElement("div");
+        meta.className = "meta";
+
+        let date = "Data nieznana";
+
+        if (article.published) {
+            const parsed = new Date(article.published);
+
+            if (!isNaN(parsed)) {
+                date = parsed.toLocaleString("pl-PL");
+            }
+        }
+
+        meta.textContent =
+            (article.source || "Źródło nieznane") +
+            " • " + date;
+
+        const title = document.createElement("h2");
+        title.textContent = article.title;
+
+        const description = document.createElement("p");
+        description.textContent = article.description || "";
+
+        const link = document.createElement("a");
+
+        try {
+            const url = new URL(article.url);
+
+            if (url.protocol !== "https:" &&
+                url.protocol !== "http:") {
+                throw new Error("Nieprawidłowy adres");
+            }
+
+            link.href = url.href;
+            link.target = "_blank";
+            link.rel = "noopener noreferrer";
+            link.textContent = "Czytaj u źródła →";
+
+        } catch {
+            link.textContent = "Nieprawidłowy adres artykułu";
+        }
+
+        card.append(meta, title, description, link);
+        container.appendChild(card);
+    });
+}
+
+loadNews();
+</script>
+
+</body>
+</html>
