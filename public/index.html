@@ -294,6 +294,36 @@ footer {
 
 footer small { color: #b9d0bd; }
 
+/* Dyskretny licznik przypięty do dolnej krawędzi ekranu. */
+.visitor-counter {
+    position: fixed;
+    right: 14px;
+    bottom: max(12px, env(safe-area-inset-bottom));
+    z-index: 100;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 10px;
+    border: 1px solid rgba(217, 234, 219, .18);
+    border-radius: 999px;
+    background: rgba(16, 57, 31, .94);
+    color: #d9eadb;
+    box-shadow: 0 3px 14px rgba(0, 0, 0, .16);
+    font-size: 11px;
+    line-height: 1;
+    opacity: .78;
+    pointer-events: none;
+    backdrop-filter: blur(8px);
+}
+
+.visitor-dot {
+    width: 6px;
+    height: 6px;
+    flex: 0 0 6px;
+    border-radius: 50%;
+    background: #9fcba7;
+}
+
 @media (max-width: 650px) {
     main { width: min(100% - 24px, 1150px); margin-top: 22px; }
     .calculator-grid { grid-template-columns: 1fr; }
@@ -390,10 +420,57 @@ footer small { color: #b9d0bd; }
     <small>Wiadomości są prezentowane jako zapowiedzi i opracowania na podstawie kanałów RSS. Prawa do oryginalnych artykułów i zdjęć pozostają przy ich wydawcach.</small>
 </footer>
 
+<div class="visitor-counter" title="Licznik anonimowych sesji odwiedzin" aria-live="polite">
+    <span class="visitor-dot" aria-hidden="true"></span>
+    <span id="visitorCount">Odwiedziny: ...</span>
+</div>
+
 <script>
 const API_BASE = "https://satyra24.kemeni69.workers.dev";
 let allArticles = [];
 let marketProducts = [];
+
+async function loadVisitorCount() {
+    const label = document.getElementById("visitorCount");
+    const sessionKey = "satyra24_visit_counted_v1";
+    let countedThisSession = false;
+
+    try {
+        countedThisSession = sessionStorage.getItem(sessionKey) === "1";
+    } catch (error) {
+        // Gdy sessionStorage jest zablokowany, licznik nadal działa,
+        // ale może policzyć ponowne wejście po odświeżeniu.
+    }
+
+    try {
+        const response = await fetch(API_BASE + "/api/visits", {
+            method: countedThisSession ? "GET" : "POST",
+            cache: "no-store"
+        });
+
+        if (!response.ok) throw new Error("HTTP " + response.status);
+
+        const data = await response.json();
+        const visits = Number(data.visits);
+
+        if (!Number.isSafeInteger(visits) || visits < 0) {
+            throw new Error("Nieprawidłowa wartość licznika");
+        }
+
+        if (!countedThisSession) {
+            try {
+                sessionStorage.setItem(sessionKey, "1");
+            } catch (error) {
+                // Brak zapisu sesji nie blokuje wyświetlenia wyniku.
+            }
+        }
+
+        label.textContent = "Odwiedziny: " + visits.toLocaleString("pl-PL");
+    } catch (error) {
+        label.textContent = "Odwiedziny: —";
+        console.warn("Licznik SATYRA24 jest niedostępny:", error);
+    }
+}
 
 // Własne lub licencjonowane zdjęcia dodawaj do public/images/.
 // Następnie przypisz adres artykułu do lokalnego pliku, np.:
@@ -746,6 +823,7 @@ function handleRoute() {
 window.addEventListener("popstate", handleRoute);
 loadNews();
 handleRoute();
+loadVisitorCount();
 </script>
 </body>
 </html>
