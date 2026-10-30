@@ -4,9 +4,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SATYRA24 – Portal Rolniczy</title>
+
+<title>SATYRA24 - Portal Rolniczy</title>
+
 <style>
-* { box-sizing: border-box; }
+* {
+    box-sizing: border-box;
+}
 
 body {
     margin: 0;
@@ -27,18 +31,38 @@ header {
     letter-spacing: 2px;
 }
 
-header p { margin-bottom: 0; color: #d7ead8; }
+header p {
+    margin-bottom: 0;
+    color: #d7ead8;
+}
 
 nav {
     background: #10391f;
-    padding: 13px 7%;
+    padding: 12px 7%;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+nav button {
+    background: transparent;
     color: white;
+    border: 0;
+    padding: 10px 14px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+nav button:hover,
+nav button.active {
+    background: #28643b;
 }
 
 main {
     max-width: 1150px;
     margin: 30px auto;
     padding: 0 18px;
+    min-height: 55vh;
 }
 
 .top {
@@ -49,7 +73,9 @@ main {
     gap: 12px;
 }
 
-h1 { font-size: 27px; }
+h1 {
+    font-size: 27px;
+}
 
 #status {
     color: #53705a;
@@ -65,7 +91,9 @@ button {
     cursor: pointer;
 }
 
-button:hover { background: #174b2b; }
+button:hover {
+    background: #174b2b;
+}
 
 #search {
     width: 100%;
@@ -107,7 +135,9 @@ button:hover { background: #174b2b; }
     text-decoration: none;
 }
 
-.article a:hover { text-decoration: underline; }
+.article a:hover {
+    text-decoration: underline;
+}
 
 .meta {
     color: #7b887c;
@@ -122,12 +152,110 @@ button:hover { background: #174b2b; }
     grid-column: 1 / -1;
 }
 
+.hidden {
+    display: none !important;
+}
+
+.detail {
+    background: white;
+    border: 1px solid #e0e5df;
+    border-radius: 8px;
+    padding: 30px;
+    max-width: 850px;
+    margin: 0 auto;
+}
+
+.detail h1 {
+    line-height: 1.35;
+}
+
+.detail-description {
+    font-size: 17px;
+    line-height: 1.8;
+    color: #455248;
+    margin: 25px 0;
+}
+
+.back-button {
+    margin-bottom: 20px;
+}
+
+.prices-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin: 25px 0;
+}
+
+.price-card {
+    background: white;
+    border: 1px solid #e0e5df;
+    border-radius: 8px;
+    padding: 22px;
+}
+
+.price-card h3 {
+    margin-top: 0;
+    color: #526052;
+    font-size: 15px;
+}
+
+.price-value {
+    font-size: 30px;
+    font-weight: bold;
+    color: #174b2b;
+}
+
+.price-unit {
+    color: #738073;
+    font-size: 13px;
+}
+
+.price-trend {
+    margin-top: 10px;
+    font-size: 13px;
+}
+
+.market-info {
+    background: white;
+    border: 1px solid #e0e5df;
+    border-radius: 8px;
+    padding: 24px;
+    margin-top: 25px;
+    line-height: 1.6;
+}
+
+.market-info a {
+    color: #21633a;
+    font-weight: bold;
+}
+
+.section-note {
+    color: #687568;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
 footer {
     background: #10391f;
     color: #d7ead8;
     padding: 25px 7%;
     margin-top: 50px;
     text-align: center;
+}
+
+@media (max-width: 600px) {
+    .logo {
+        font-size: 30px;
+    }
+
+    .detail {
+        padding: 20px;
+    }
+
+    h1 {
+        font-size: 23px;
+    }
 }
 </style>
 </head>
@@ -140,42 +268,145 @@ footer {
 </header>
 
 <nav>
-    POLSKIE ROLNICTWO | RYNEK | MASZYNY | UPRAWY | HODOWLA
+    <button id="newsTab" class="active" onclick="showView('news')">
+        WIADOMOŚCI
+    </button>
+
+    <button id="pricesTab" onclick="showView('prices')">
+        CENY RYNKOWE
+    </button>
 </nav>
 
 <main>
-    <div class="top">
-        <div>
-            <h1>Najnowsze wiadomości</h1>
-            <div id="status">Łączenie z SATYRA24 API...</div>
+
+    <section id="newsView">
+        <div class="top">
+            <div>
+                <h1>Najnowsze wiadomości</h1>
+                <div id="status">Łączenie z SATYRA24 API...</div>
+            </div>
+
+            <button onclick="loadNews()">Odśwież wiadomości</button>
         </div>
-        <button onclick="loadNews()">Odśwież wiadomości</button>
-    </div>
 
-    <input
-        id="search"
-        type="search"
-        placeholder="Szukaj wiadomości..."
-        oninput="renderNews()"
-    >
+        <input
+            id="search"
+            type="search"
+            placeholder="Szukaj wiadomości..."
+            oninput="renderNews()"
+        >
 
-    <section id="articles">
-        <div id="message">Pobieranie aktualności...</div>
+        <section id="articles">
+            <div id="message">Pobieranie aktualności...</div>
+        </section>
     </section>
+
+    <section id="detailView" class="hidden"></section>
+
+    <section id="pricesView" class="hidden">
+        <div class="top">
+            <div>
+                <h1>Ceny rynkowe</h1>
+                <div id="priceStatus">Pobieranie cen...</div>
+            </div>
+
+            <button onclick="loadPrices()">Odśwież ceny</button>
+        </div>
+
+        <h2>Ceny paliw</h2>
+
+        <div id="fuelPrices" class="prices-grid">
+            <div id="message">Pobieranie danych cenowych...</div>
+        </div>
+
+        <p class="section-note">
+            Ceny paliw są średnimi wartościami krajowymi.
+            Nie oznaczają ceny na konkretnej stacji.
+        </p>
+
+        <section class="market-info">
+            <h2>Rynek zbóż i produktów rolnych</h2>
+
+            <p>
+                Ceny skupu żyta, pszenicy, kukurydzy, rzepaku
+                i innych produktów rolnych wymagają osobnego
+                połączenia z oficjalnymi danymi rynkowymi.
+            </p>
+
+            <p>
+                Nie publikujemy tutaj niezweryfikowanych wartości.
+            </p>
+
+            <a
+                href="https://zsrir.minrol.gov.pl/data"
+                target="_blank"
+                rel="noopener noreferrer"
+            >
+                Sprawdź oficjalne dane ZSRiR →
+            </a>
+        </section>
+
+        <p class="section-note">
+            Źródło cen paliw:
+            <a href="https://benzynamapa.pl"
+               target="_blank"
+               rel="noopener noreferrer">
+                BenzynaMAPA.pl
+            </a>.
+            Dane dostawcy są aktualizowane do trzech razy dziennie.
+        </p>
+    </section>
+
 </main>
 
 <footer>
     <strong>SATYRA24</strong>
     <p>Portal informacyjny o polskim rolnictwie.</p>
-    <small>Wiadomości pochodzą z zewnętrznych źródeł.
-    Czytaj pełne artykuły u ich wydawców.</small>
+    <small>
+        Wiadomości pochodzą z zewnętrznych źródeł.
+        Opisy RSS nie zastępują pełnych artykułów wydawców.
+    </small>
 </footer>
 
 <script>
-const API_URL =
-    "https://satyra24.kemeni69.workers.dev/api/news";
+const API_BASE = "https://satyra24.kemeni69.workers.dev";
 
 let allArticles = [];
+let currentView = "news";
+
+function slugify(text) {
+    return text
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/g, "");
+}
+
+function articleSlug(article) {
+    let hash = 0;
+    const value = article.url || article.title;
+
+    for (let i = 0; i < value.length; i++) {
+        hash = ((hash << 5) - hash) + value.charCodeAt(i);
+        hash |= 0;
+    }
+
+    return slugify(article.title) + "-" +
+        Math.abs(hash).toString(36);
+}
+
+function formatDate(value) {
+    if (!value) return "Data nieznana";
+
+    const date = new Date(value);
+
+    if (isNaN(date.getTime())) {
+        return "Data nieznana";
+    }
+
+    return date.toLocaleString("pl-PL");
+}
 
 async function loadNews() {
     const status = document.getElementById("status");
@@ -184,7 +415,7 @@ async function loadNews() {
     status.textContent = "Pobieranie aktualności...";
 
     try {
-        const response = await fetch(API_URL);
+        const response = await fetch(API_BASE + "/api/news");
 
         if (!response.ok) {
             throw new Error("HTTP " + response.status);
@@ -200,17 +431,25 @@ async function loadNews() {
 
         status.textContent =
             "Połączono z API • " + data.count +
-            " wiadomości • Aktualizacja: " +
-            new Date(data.updated).toLocaleTimeString("pl-PL");
+            " wiadomości • " + formatDate(data.updated);
 
         renderNews();
+
+        if (location.pathname.startsWith("/artykul/")) {
+            renderArticleFromURL();
+        }
 
     } catch (error) {
         status.textContent = "Błąd połączenia z API";
 
-        container.innerHTML =
-            '<div id="message">Nie udało się pobrać wiadomości. ' +
-            'Spróbuj ponownie za chwilę.</div>';
+        container.replaceChildren();
+
+        const message = document.createElement("div");
+        message.id = "message";
+        message.textContent =
+            "Nie udało się pobrać wiadomości. Spróbuj ponownie.";
+
+        container.appendChild(message);
 
         console.error(error);
     }
@@ -222,15 +461,20 @@ function renderNews() {
         .value.toLowerCase();
 
     const filtered = allArticles.filter(article =>
-        (article.title + " " + article.description + " " +
-        article.source).toLowerCase().includes(query)
+        (
+            article.title + " " +
+            article.description + " " +
+            article.source
+        ).toLowerCase().includes(query)
     );
 
     container.replaceChildren();
 
     if (filtered.length === 0) {
-        container.innerHTML =
-            '<div id="message">Nie znaleziono wiadomości.</div>';
+        const message = document.createElement("div");
+        message.id = "message";
+        message.textContent = "Nie znaleziono wiadomości.";
+        container.appendChild(message);
         return;
     }
 
@@ -240,20 +484,9 @@ function renderNews() {
 
         const meta = document.createElement("div");
         meta.className = "meta";
-
-        let date = "Data nieznana";
-
-        if (article.published) {
-            const parsed = new Date(article.published);
-
-            if (!isNaN(parsed)) {
-                date = parsed.toLocaleString("pl-PL");
-            }
-        }
-
         meta.textContent =
             (article.source || "Źródło nieznane") +
-            " • " + date;
+            " • " + formatDate(article.published);
 
         const title = document.createElement("h2");
         title.textContent = article.title;
@@ -262,30 +495,227 @@ function renderNews() {
         description.textContent = article.description || "";
 
         const link = document.createElement("a");
+        link.href = "/artykul/" + articleSlug(article);
+        link.textContent = "Otwórz wiadomość →";
 
-        try {
-            const url = new URL(article.url);
-
-            if (url.protocol !== "https:" &&
-                url.protocol !== "http:") {
-                throw new Error("Nieprawidłowy adres");
-            }
-
-            link.href = url.href;
-            link.target = "_blank";
-            link.rel = "noopener noreferrer";
-            link.textContent = "Czytaj u źródła →";
-
-        } catch {
-            link.textContent = "Nieprawidłowy adres artykułu";
-        }
+        link.addEventListener("click", event => {
+            event.preventDefault();
+            navigate(link.href);
+        });
 
         card.append(meta, title, description, link);
         container.appendChild(card);
     });
 }
 
+function navigate(url) {
+    history.pushState({}, "", url);
+    handleRoute();
+    window.scrollTo(0, 0);
+}
+
+function renderArticleFromURL() {
+    const slug = decodeURIComponent(
+        location.pathname.split("/").pop()
+    );
+
+    const article = allArticles.find(
+        item => articleSlug(item) === slug
+    );
+
+    const detail = document.getElementById("detailView");
+    detail.replaceChildren();
+
+    if (!article) {
+        const message = document.createElement("div");
+        message.className = "detail";
+        message.textContent =
+            "Nie znaleziono tej wiadomości. Mogła już zniknąć z kanału RSS.";
+
+        detail.appendChild(message);
+        return;
+    }
+
+    const back = document.createElement("button");
+    back.className = "back-button";
+    back.textContent = "← Powrót do wiadomości";
+    back.onclick = () => navigate("/");
+
+    const box = document.createElement("article");
+    box.className = "detail";
+
+    const meta = document.createElement("div");
+    meta.className = "meta";
+    meta.textContent =
+        (article.source || "Źródło nieznane") +
+        " • " + formatDate(article.published);
+
+    const title = document.createElement("h1");
+    title.textContent = article.title;
+
+    const description = document.createElement("p");
+    description.className = "detail-description";
+    description.textContent = article.description ||
+        "Źródło nie udostępniło opisu wiadomości.";
+
+    const note = document.createElement("p");
+    note.className = "section-note";
+    note.textContent =
+        "To podgląd wiadomości przygotowany na podstawie kanału RSS. " +
+        "Nie jest to pełny tekst artykułu.";
+
+    const sourceLink = document.createElement("a");
+
+    try {
+        const sourceURL = new URL(article.url);
+
+        if (!["https:", "http:"].includes(sourceURL.protocol)) {
+            throw new Error("Nieprawidłowy adres");
+        }
+
+        sourceLink.href = sourceURL.href;
+        sourceLink.target = "_blank";
+        sourceLink.rel = "noopener noreferrer";
+        sourceLink.textContent = "Otwórz oryginalny artykuł u wydawcy →";
+    } catch {
+        sourceLink.textContent = "Adres źródła jest niedostępny.";
+    }
+
+    box.append(meta, title, description, note, sourceLink);
+    detail.append(back, box);
+}
+
+async function loadPrices() {
+    const status = document.getElementById("priceStatus");
+    const container = document.getElementById("fuelPrices");
+
+    status.textContent = "Pobieranie cen paliw...";
+
+    try {
+        const response = await fetch(API_BASE + "/api/prices");
+
+        if (!response.ok) {
+            throw new Error("HTTP " + response.status);
+        }
+
+        const data = await response.json();
+
+        if (!Array.isArray(data.fuels)) {
+            throw new Error("Nieprawidłowe dane cenowe");
+        }
+
+        status.textContent =
+            "Ostatnia aktualizacja danych: " +
+            formatDate(data.updated);
+
+        container.replaceChildren();
+
+        data.fuels.forEach(fuel => {
+            const card = document.createElement("article");
+            card.className = "price-card";
+
+            const name = document.createElement("h3");
+            name.textContent = fuel.name;
+
+            const value = document.createElement("div");
+            value.className = "price-value";
+
+            value.textContent = fuel.value === null
+                ? "Brak danych"
+                : fuel.value.toFixed(2).replace(".", ",");
+
+            const unit = document.createElement("div");
+            unit.className = "price-unit";
+            unit.textContent = fuel.unit;
+
+            const trend = document.createElement("div");
+            trend.className = "price-trend";
+
+            if (fuel.trend7d !== null) {
+                const sign = fuel.trend7d > 0 ? "+" : "";
+
+                trend.textContent =
+                    "Zmiana w 7 dni: " +
+                    sign + fuel.trend7d.toFixed(2) + " zł";
+            } else {
+                trend.textContent = "Brak danych o trendzie";
+            }
+
+            card.append(name, value, unit, trend);
+            container.appendChild(card);
+        });
+
+    } catch (error) {
+        status.textContent = "Nie udało się pobrać cen";
+
+        container.replaceChildren();
+
+        const message = document.createElement("div");
+        message.id = "message";
+        message.textContent =
+            "Serwer cen jest chwilowo niedostępny. Spróbuj później.";
+
+        container.appendChild(message);
+
+        console.error(error);
+    }
+}
+
+function showView(view) {
+    currentView = view;
+
+    document.getElementById("newsView")
+        .classList.toggle("hidden", view !== "news");
+
+    document.getElementById("pricesView")
+        .classList.toggle("hidden", view !== "prices");
+
+    document.getElementById("detailView")
+        .classList.add("hidden");
+
+    document.getElementById("newsTab")
+        .classList.toggle("active", view === "news");
+
+    document.getElementById("pricesTab")
+        .classList.toggle("active", view === "prices");
+
+    if (view === "prices") {
+        loadPrices();
+    }
+}
+
+function handleRoute() {
+    if (location.pathname.startsWith("/artykul/")) {
+        currentView = "detail";
+
+        document.getElementById("newsView").classList.add("hidden");
+        document.getElementById("pricesView").classList.add("hidden");
+
+        const detail = document.getElementById("detailView");
+        detail.classList.remove("hidden");
+
+        document.getElementById("newsTab").classList.remove("active");
+        document.getElementById("pricesTab").classList.remove("active");
+
+        if (allArticles.length) {
+            renderArticleFromURL();
+        }
+
+        return;
+    }
+
+    if (location.pathname === "/ceny") {
+        showView("prices");
+        return;
+    }
+
+    showView("news");
+}
+
+window.addEventListener("popstate", handleRoute);
+
 loadNews();
+handleRoute();
 </script>
 
 </body>
