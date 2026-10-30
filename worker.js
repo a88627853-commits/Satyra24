@@ -1,3 +1,5 @@
+import { DurableObject } from "cloudflare:workers";
+
 const FEEDS = [
     {
         name: "Farmer.pl",
