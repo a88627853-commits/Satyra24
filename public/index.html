@@ -1,381 +1,414 @@
-
 <!DOCTYPE html>
 <html lang="pl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+<meta name="description" content="SATYRA24 - aktualności i ceny z polskiego rynku rolnego.">
 <title>SATYRA24 - Portal Rolniczy</title>
-
 <style>
-* {
-    box-sizing: border-box;
+:root {
+    color-scheme: light;
+    --green: #174b2b;
+    --green-dark: #10391f;
+    --green-soft: #e7f0e8;
+    --text: #202820;
+    --muted: #657267;
+    --line: #e0e7df;
+    --paper: #ffffff;
+    --page: #f2f5f1;
+    --shadow: 0 8px 24px rgba(24, 55, 31, 0.07);
 }
+
+* { box-sizing: border-box; }
 
 body {
     margin: 0;
-    background: #f2f4f1;
-    color: #202820;
-    font-family: Arial, sans-serif;
+    background: var(--page);
+    color: var(--text);
+    font-family: Arial, Helvetica, sans-serif;
 }
 
 header {
-    background: #174b2b;
+    background: linear-gradient(125deg, #174b2b, #24663b);
     color: white;
-    padding: 25px 7%;
+    padding: 30px max(7%, calc((100% - 1150px) / 2));
+}
+
+.brand-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 14px;
 }
 
 .logo {
-    font-size: 38px;
+    font-size: clamp(30px, 5vw, 42px);
     font-weight: 900;
     letter-spacing: 2px;
 }
 
-header p {
-    margin-bottom: 0;
-    color: #d7ead8;
+.tagline {
+    margin: 7px 0 0;
+    color: #d9eadb;
+}
+
+.header-mark {
+    border: 1px solid rgba(255,255,255,.25);
+    border-radius: 999px;
+    padding: 8px 13px;
+    font-size: 12px;
+    letter-spacing: 1px;
 }
 
 nav {
-    background: #10391f;
-    padding: 12px 7%;
+    background: var(--green-dark);
+    padding: 10px max(7%, calc((100% - 1150px) / 2));
     display: flex;
-    gap: 10px;
     flex-wrap: wrap;
+    gap: 8px;
 }
+
+button, input, select { font: inherit; }
 
 nav button {
     background: transparent;
-    color: white;
+    color: #fff;
     border: 0;
-    padding: 10px 14px;
+    border-radius: 6px;
+    padding: 11px 15px;
     cursor: pointer;
-    border-radius: 5px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: .4px;
 }
 
-nav button:hover,
-nav button.active {
-    background: #28643b;
-}
+nav button:hover, nav button.active { background: #2c6940; }
 
 main {
-    max-width: 1150px;
-    margin: 30px auto;
-    padding: 0 18px;
-    min-height: 55vh;
+    width: min(1150px, calc(100% - 36px));
+    min-height: 58vh;
+    margin: 32px auto;
 }
 
-.top {
+.view { display: block; }
+.hidden { display: none !important; }
+
+.page-heading {
     display: flex;
+    align-items: end;
     justify-content: space-between;
-    align-items: center;
+    gap: 16px;
     flex-wrap: wrap;
-    gap: 12px;
+    margin-bottom: 18px;
 }
 
-h1 {
-    font-size: 27px;
+h1 { font-size: clamp(24px, 4vw, 31px); margin: 0 0 8px; }
+h2 { font-size: 21px; }
+
+.status, .muted, .meta, .fine-print {
+    color: var(--muted);
 }
 
-#status {
-    color: #53705a;
-    font-size: 13px;
-}
+.status, .meta { font-size: 12px; }
 
-button {
-    background: #21633a;
-    color: white;
+.primary-button, .secondary-button {
     border: 0;
-    border-radius: 5px;
-    padding: 11px 17px;
+    border-radius: 6px;
+    padding: 11px 16px;
     cursor: pointer;
+    font-weight: 700;
 }
 
-button:hover {
-    background: #174b2b;
+.primary-button {
+    background: var(--green);
+    color: white;
 }
 
-#search {
+.primary-button:hover { background: var(--green-dark); }
+
+.secondary-button {
+    color: var(--green);
+    background: var(--green-soft);
+}
+
+.secondary-button:hover { background: #d9e8db; }
+
+.search-input, .field-input, .field-select {
     width: 100%;
-    padding: 14px;
-    margin: 15px 0 25px;
-    border: 1px solid #ccd5cc;
-    border-radius: 5px;
-    font-size: 15px;
+    padding: 13px 14px;
+    border: 1px solid #cbd6cb;
+    border-radius: 7px;
+    background: white;
+    color: var(--text);
 }
 
-#articles {
+.search-input { margin: 10px 0 22px; }
+
+.search-input:focus, .field-input:focus, .field-select:focus {
+    outline: 2px solid #8bb797;
+    border-color: var(--green);
+}
+
+.article-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(265px, 1fr));
     gap: 18px;
 }
 
-.article {
-    background: white;
-    border-radius: 7px;
-    padding: 21px;
-    border: 1px solid #e0e5df;
-    box-shadow: 0 2px 8px #00000008;
+.article-card, .price-card, .panel, .detail-card {
+    background: var(--paper);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
 }
 
-.article h2 {
-    font-size: 19px;
+.article-card { overflow: hidden; }
+
+.article-card-body { padding: 19px; }
+
+.article-card h2 {
+    font-size: 18px;
     line-height: 1.4;
-    margin-top: 10px;
+    margin: 10px 0;
 }
 
-.article p {
-    color: #59645b;
-    line-height: 1.55;
+.article-card p {
+    color: #58645a;
+    line-height: 1.6;
+    margin: 0 0 16px;
 }
 
-.article a {
+.article-card a, .source-link {
     color: #21633a;
-    font-weight: bold;
+    font-weight: 700;
     text-decoration: none;
 }
 
-.article a:hover {
-    text-decoration: underline;
-}
+.article-card a:hover, .source-link:hover { text-decoration: underline; }
 
-.meta {
-    color: #7b887c;
-    font-size: 12px;
-}
-
-#message {
-    background: white;
-    padding: 25px;
-    border-radius: 7px;
-    text-align: center;
-    grid-column: 1 / -1;
-}
-
-.hidden {
-    display: none !important;
-}
-
-.detail {
-    background: white;
-    border: 1px solid #e0e5df;
-    border-radius: 8px;
-    padding: 30px;
-    max-width: 850px;
-    margin: 0 auto;
-}
-
-.detail h1 {
-    line-height: 1.35;
-}
-
-.detail-description {
-    font-size: 17px;
-    line-height: 1.8;
-    color: #455248;
-    margin: 25px 0;
-}
-
-.back-button {
-    margin-bottom: 20px;
-}
-
-.prices-grid {
+.photo-slot {
+    min-height: 180px;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 16px;
-    margin: 25px 0;
+    place-items: center;
+    overflow: hidden;
+    background: linear-gradient(135deg, #e2ecdf, #cbdcc8);
+    color: #49634b;
+    text-align: center;
+    padding: 18px;
 }
 
-.price-card {
-    background: white;
-    border: 1px solid #e0e5df;
-    border-radius: 8px;
-    padding: 22px;
+.photo-slot img {
+    width: 100%;
+    height: 100%;
+    min-height: 180px;
+    max-height: 330px;
+    object-fit: cover;
+    display: block;
 }
 
-.price-card h3 {
-    margin-top: 0;
-    color: #526052;
-    font-size: 15px;
+.photo-placeholder strong { display: block; font-size: 17px; }
+.photo-placeholder span { display: block; font-size: 12px; margin-top: 7px; }
+
+.detail-card {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: clamp(20px, 4vw, 36px);
 }
 
-.price-value {
-    font-size: 30px;
-    font-weight: bold;
-    color: #174b2b;
-}
+.detail-card h1 { line-height: 1.3; margin: 12px 0; }
+.detail-lead { font-size: 18px; color: #465448; line-height: 1.8; }
+.detail-photo { margin: 22px 0; border-radius: 8px; overflow: hidden; }
+.detail-photo img { width: 100%; display: block; max-height: 460px; object-fit: cover; }
+.detail-photo figcaption { padding: 8px 0; color: var(--muted); font-size: 12px; }
 
-.price-unit {
-    color: #738073;
-    font-size: 13px;
-}
-
-.price-trend {
-    margin-top: 10px;
-    font-size: 13px;
-}
-
-.market-info {
-    background: white;
-    border: 1px solid #e0e5df;
-    border-radius: 8px;
-    padding: 24px;
-    margin-top: 25px;
+.notice {
+    background: #f4f7f3;
+    border-left: 4px solid #8aa98d;
+    padding: 13px 15px;
+    margin: 20px 0;
+    color: #536254;
     line-height: 1.6;
-}
-
-.market-info a {
-    color: #21633a;
-    font-weight: bold;
-}
-
-.section-note {
-    color: #687568;
     font-size: 13px;
-    line-height: 1.6;
+}
+
+.price-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(205px, 1fr));
+    gap: 15px;
+    margin: 20px 0 28px;
+}
+
+.price-card { padding: 19px; }
+.price-card h3 { font-size: 15px; margin: 0 0 13px; color: #526052; }
+.price-value { color: var(--green); font-size: 27px; font-weight: 800; }
+.price-unit { color: var(--muted); font-size: 12px; margin-top: 4px; }
+.price-period { color: var(--muted); font-size: 12px; margin-top: 12px; }
+
+.panel { padding: 22px; margin: 25px 0; }
+.panel h2 { margin-top: 0; }
+
+.calculator-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.field label {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 7px;
+}
+
+.result-box {
+    border-radius: 8px;
+    background: var(--green-soft);
+    padding: 18px;
+    margin-top: 16px;
+}
+
+.result-caption { color: #516653; font-size: 13px; }
+.result-value { color: var(--green-dark); font-size: 29px; font-weight: 800; margin-top: 4px; }
+
+.fine-print { font-size: 12px; line-height: 1.6; }
+
+.empty-state {
+    grid-column: 1 / -1;
+    background: white;
+    border: 1px dashed #cbd6cb;
+    border-radius: 9px;
+    text-align: center;
+    padding: 28px;
+    color: var(--muted);
 }
 
 footer {
-    background: #10391f;
-    color: #d7ead8;
-    padding: 25px 7%;
-    margin-top: 50px;
+    margin-top: 55px;
+    background: var(--green-dark);
+    color: #d9eadb;
+    padding: 27px 18px;
     text-align: center;
+    line-height: 1.6;
 }
 
-@media (max-width: 600px) {
-    .logo {
-        font-size: 30px;
-    }
+footer small { color: #b9d0bd; }
 
-    .detail {
-        padding: 20px;
-    }
-
-    h1 {
-        font-size: 23px;
-    }
+@media (max-width: 650px) {
+    main { width: min(100% - 24px, 1150px); margin-top: 22px; }
+    .calculator-grid { grid-template-columns: 1fr; }
+    nav { padding-left: 12px; padding-right: 12px; }
+    header { padding: 23px 18px; }
 }
 </style>
 </head>
-
 <body>
 
 <header>
-    <div class="logo">SATYRA24</div>
-    <p>Aktualności ze świata polskiego rolnictwa</p>
+    <div class="brand-row">
+        <div>
+            <div class="logo">SATYRA24</div>
+            <p class="tagline">Aktualności i rynek polskiego rolnictwa</p>
+        </div>
+        <div class="header-mark">INFORMACJE • RYNEK • ROLNICTWO</div>
+    </div>
 </header>
 
 <nav>
-    <button id="newsTab" class="active" onclick="showView('news')">
-        WIADOMOŚCI
-    </button>
-
-    <button id="pricesTab" onclick="showView('prices')">
-        CENY RYNKOWE
-    </button>
+    <button id="newsTab" class="active" onclick="showView('news')">WIADOMOŚCI</button>
+    <button id="marketTab" onclick="showView('market')">CENY RYNKOWE</button>
 </nav>
 
 <main>
-
-    <section id="newsView">
-        <div class="top">
+    <section id="newsView" class="view">
+        <div class="page-heading">
             <div>
                 <h1>Najnowsze wiadomości</h1>
-                <div id="status">Łączenie z SATYRA24 API...</div>
+                <div id="newsStatus" class="status">Łączenie z SATYRA24 API...</div>
             </div>
-
-            <button onclick="loadNews()">Odśwież wiadomości</button>
+            <button class="primary-button" onclick="loadNews()">Odśwież wiadomości</button>
         </div>
 
-        <input
-            id="search"
-            type="search"
-            placeholder="Szukaj wiadomości..."
-            oninput="renderNews()"
-        >
+        <input id="search" class="search-input" type="search"
+               placeholder="Szukaj wiadomości..." oninput="renderNews()">
 
-        <section id="articles">
-            <div id="message">Pobieranie aktualności...</div>
+        <section id="articles" class="article-grid">
+            <div class="empty-state">Pobieranie aktualności...</div>
         </section>
     </section>
 
-    <section id="detailView" class="hidden"></section>
+    <section id="detailView" class="view hidden"></section>
 
-    <section id="pricesView" class="hidden">
-        <div class="top">
+    <section id="marketView" class="view hidden">
+        <div class="page-heading">
             <div>
-                <h1>Ceny rynkowe</h1>
-                <div id="priceStatus">Pobieranie cen...</div>
+                <h1>Rynek produktów rolnych</h1>
+                <div id="marketStatus" class="status">Pobieranie danych GUS...</div>
+            </div>
+            <button class="primary-button" onclick="loadMarket()">Odśwież ceny</button>
+        </div>
+
+        <div id="marketPrices" class="price-grid">
+            <div class="empty-state">Ładowanie cen rynkowych...</div>
+        </div>
+
+        <section class="panel">
+            <h2>Kalkulator zakupów</h2>
+            <p class="muted">Wpisz budżet, wybierz produkt i sprawdź przybliżoną ilość w kilogramach lub litrach.</p>
+
+            <div class="calculator-grid">
+                <div class="field">
+                    <label for="budget">Twój budżet (zł)</label>
+                    <input id="budget" class="field-input" type="number" min="0" step="0.01" value="1000" oninput="calculateQuantity()">
+                </div>
+                <div class="field">
+                    <label for="productSelect">Produkt</label>
+                    <select id="productSelect" class="field-select" onchange="calculateQuantity()">
+                        <option value="">Najpierw pobierz ceny</option>
+                    </select>
+                </div>
             </div>
 
-            <button onclick="loadPrices()">Odśwież ceny</button>
-        </div>
-
-        <h2>Ceny paliw</h2>
-
-        <div id="fuelPrices" class="prices-grid">
-            <div id="message">Pobieranie danych cenowych...</div>
-        </div>
-
-        <p class="section-note">
-            Ceny paliw są średnimi wartościami krajowymi.
-            Nie oznaczają ceny na konkretnej stacji.
-        </p>
-
-        <section class="market-info">
-            <h2>Rynek zbóż i produktów rolnych</h2>
-
-            <p>
-                Ceny skupu żyta, pszenicy, kukurydzy, rzepaku
-                i innych produktów rolnych wymagają osobnego
-                połączenia z oficjalnymi danymi rynkowymi.
-            </p>
-
-            <p>
-                Nie publikujemy tutaj niezweryfikowanych wartości.
-            </p>
-
-            <a
-                href="https://zsrir.minrol.gov.pl/data"
-                target="_blank"
-                rel="noopener noreferrer"
-            >
-                Sprawdź oficjalne dane ZSRiR →
-            </a>
+            <div class="result-box" aria-live="polite">
+                <div class="result-caption">Szacunkowa ilość według średniej ceny skupu GUS</div>
+                <div id="quantityResult" class="result-value">-</div>
+                <div id="quantityDetails" class="fine-print">Wybierz produkt, aby wykonać obliczenie.</div>
+            </div>
         </section>
 
-        <p class="section-note">
-            Źródło cen paliw:
-            <a href="https://benzynamapa.pl"
-               target="_blank"
-               rel="noopener noreferrer">
-                BenzynaMAPA.pl
-            </a>.
-            Dane dostawcy są aktualizowane do trzech razy dziennie.
+        <p class="fine-print">
+            Źródło: GUS, Bank Danych Lokalnych, temat P2967. Są to średnie miesięczne ceny skupu, a nie aktualne oferty konkretnego punktu skupu lub sklepu. Dane mogą być publikowane z opóźnieniem. Jednostki źródłowe są przeliczane na kg lub litry do celów kalkulatora.
+            Licencja danych: CC BY 4.0.
+            <a class="source-link" href="https://bdl.stat.gov.pl/bdl/dane/podgrup/temat#P2967" target="_blank" rel="noopener noreferrer">Otwórz dane GUS →</a>
         </p>
     </section>
-
 </main>
 
 <footer>
     <strong>SATYRA24</strong>
-    <p>Portal informacyjny o polskim rolnictwie.</p>
-    <small>
-        Wiadomości pochodzą z zewnętrznych źródeł.
-        Opisy RSS nie zastępują pełnych artykułów wydawców.
-    </small>
+    <div>Portal informacyjny o polskim rolnictwie.</div>
+    <small>Wiadomości są prezentowane jako zapowiedzi i opracowania na podstawie kanałów RSS. Prawa do oryginalnych artykułów i zdjęć pozostają przy ich wydawcach.</small>
 </footer>
 
 <script>
 const API_BASE = "https://satyra24.kemeni69.workers.dev";
-
 let allArticles = [];
-let currentView = "news";
+let marketProducts = [];
+
+// Własne lub licencjonowane zdjęcia dodawaj do public/images/.
+// Następnie przypisz adres artykułu do lokalnego pliku, np.:
+// "https://adres-artykulu.example": "/images/kombajn-zniwa.jpg"
+const EDITORIAL_IMAGES = {
+};
+
+function formatDate(value) {
+    if (!value) return "Data nieznana";
+    const date = new Date(value);
+    return Number.isNaN(date.getTime()) ? "Data nieznana" : date.toLocaleString("pl-PL");
+}
 
 function slugify(text) {
-    return text
+    return String(text || "")
         .toLowerCase()
         .normalize("NFD")
         .replace(/[\u0300-\u036f]/g, "")
@@ -385,127 +418,124 @@ function slugify(text) {
 
 function articleSlug(article) {
     let hash = 0;
-    const value = article.url || article.title;
-
+    const value = article.url || article.title || "";
     for (let i = 0; i < value.length; i++) {
         hash = ((hash << 5) - hash) + value.charCodeAt(i);
         hash |= 0;
     }
-
-    return slugify(article.title) + "-" +
-        Math.abs(hash).toString(36);
+    return slugify(article.title) + "-" + Math.abs(hash).toString(36);
 }
 
-function formatDate(value) {
-    if (!value) return "Data nieznana";
+function photoFor(article) {
+    return EDITORIAL_IMAGES[article.url] || null;
+}
 
-    const date = new Date(value);
+function makePhoto(article, className) {
+    const figure = document.createElement("figure");
+    figure.className = className || "photo-slot";
+    const source = photoFor(article);
 
-    if (isNaN(date.getTime())) {
-        return "Data nieznana";
+    if (source && source.startsWith("/images/")) {
+        const image = document.createElement("img");
+        image.src = source;
+        image.alt = "Zdjęcie do artykułu: " + article.title;
+        image.loading = "lazy";
+        figure.appendChild(image);
+
+        if (className === "detail-photo") {
+            const caption = document.createElement("figcaption");
+            caption.textContent = "Zdjęcie redakcyjne SATYRA24";
+            figure.appendChild(caption);
+        }
+    } else {
+        const placeholder = document.createElement("div");
+        placeholder.className = "photo-placeholder";
+        const strong = document.createElement("strong");
+        strong.textContent = "Miejsce na zdjęcie";
+        const small = document.createElement("span");
+        small.textContent = "Dodaj własną lub licencjonowaną fotografię";
+        placeholder.append(strong, small);
+        figure.appendChild(placeholder);
     }
 
-    return date.toLocaleString("pl-PL");
+    return figure;
 }
 
 async function loadNews() {
-    const status = document.getElementById("status");
-    const container = document.getElementById("articles");
-
+    const status = document.getElementById("newsStatus");
     status.textContent = "Pobieranie aktualności...";
 
     try {
         const response = await fetch(API_BASE + "/api/news");
-
-        if (!response.ok) {
-            throw new Error("HTTP " + response.status);
-        }
+        if (!response.ok) throw new Error("HTTP " + response.status);
 
         const data = await response.json();
-
-        if (!Array.isArray(data.articles)) {
-            throw new Error("Nieprawidłowa odpowiedź API");
-        }
+        if (!Array.isArray(data.articles)) throw new Error("Nieprawidłowa odpowiedź API");
 
         allArticles = data.articles;
-
-        status.textContent =
-            "Połączono z API • " + data.count +
-            " wiadomości • " + formatDate(data.updated);
-
+        status.textContent = "Połączono z API • " + data.count + " wiadomości • " + formatDate(data.updated);
         renderNews();
 
-        if (location.pathname.startsWith("/artykul/")) {
-            renderArticleFromURL();
-        }
-
+        if (location.pathname.startsWith("/artykul/")) renderArticleFromURL();
     } catch (error) {
-        status.textContent = "Błąd połączenia z API";
-
+        status.textContent = "Nie udało się pobrać wiadomości";
+        const container = document.getElementById("articles");
         container.replaceChildren();
-
-        const message = document.createElement("div");
-        message.id = "message";
-        message.textContent =
-            "Nie udało się pobrać wiadomości. Spróbuj ponownie.";
-
-        container.appendChild(message);
-
+        const empty = document.createElement("div");
+        empty.className = "empty-state";
+        empty.textContent = "Serwer wiadomości jest chwilowo niedostępny. Spróbuj ponownie.";
+        container.appendChild(empty);
         console.error(error);
     }
 }
 
 function renderNews() {
     const container = document.getElementById("articles");
-    const query = document.getElementById("search")
-        .value.toLowerCase();
-
+    const query = document.getElementById("search").value.trim().toLowerCase();
     const filtered = allArticles.filter(article =>
-        (
-            article.title + " " +
-            article.description + " " +
-            article.source
-        ).toLowerCase().includes(query)
+        (article.title + " " + (article.description || "") + " " + (article.source || "")).toLowerCase().includes(query)
     );
 
     container.replaceChildren();
 
-    if (filtered.length === 0) {
-        const message = document.createElement("div");
-        message.id = "message";
-        message.textContent = "Nie znaleziono wiadomości.";
-        container.appendChild(message);
+    if (!filtered.length) {
+        const empty = document.createElement("div");
+        empty.className = "empty-state";
+        empty.textContent = "Nie znaleziono wiadomości.";
+        container.appendChild(empty);
         return;
     }
 
-    filtered.forEach(article => {
+    for (const article of filtered) {
         const card = document.createElement("article");
-        card.className = "article";
+        card.className = "article-card";
+        card.appendChild(makePhoto(article, "photo-slot"));
+
+        const body = document.createElement("div");
+        body.className = "article-card-body";
 
         const meta = document.createElement("div");
         meta.className = "meta";
-        meta.textContent =
-            (article.source || "Źródło nieznane") +
-            " • " + formatDate(article.published);
+        meta.textContent = (article.source || "Źródło nieznane") + " • " + formatDate(article.published);
 
         const title = document.createElement("h2");
         title.textContent = article.title;
 
         const description = document.createElement("p");
-        description.textContent = article.description || "";
+        description.textContent = article.description || "Brak opisu w kanale RSS.";
 
         const link = document.createElement("a");
         link.href = "/artykul/" + articleSlug(article);
-        link.textContent = "Otwórz wiadomość →";
-
+        link.textContent = "Otwórz stronę wiadomości →";
         link.addEventListener("click", event => {
             event.preventDefault();
             navigate(link.href);
         });
 
-        card.append(meta, title, description, link);
+        body.append(meta, title, description, link);
+        card.appendChild(body);
         container.appendChild(card);
-    });
+    }
 }
 
 function navigate(url) {
@@ -515,197 +545,198 @@ function navigate(url) {
 }
 
 function renderArticleFromURL() {
-    const slug = decodeURIComponent(
-        location.pathname.split("/").pop()
-    );
-
-    const article = allArticles.find(
-        item => articleSlug(item) === slug
-    );
-
+    const slug = decodeURIComponent(location.pathname.split("/").pop());
+    const article = allArticles.find(item => articleSlug(item) === slug);
     const detail = document.getElementById("detailView");
     detail.replaceChildren();
 
-    if (!article) {
-        const message = document.createElement("div");
-        message.className = "detail";
-        message.textContent =
-            "Nie znaleziono tej wiadomości. Mogła już zniknąć z kanału RSS.";
+    const back = document.createElement("button");
+    back.className = "secondary-button";
+    back.textContent = "← Powrót do wiadomości";
+    back.onclick = () => navigate("/");
+    detail.appendChild(back);
 
-        detail.appendChild(message);
+    if (!article) {
+        const missing = document.createElement("div");
+        missing.className = "detail-card";
+        missing.textContent = "Nie znaleziono wiadomości. Wróć do listy i otwórz ją ponownie.";
+        detail.appendChild(missing);
         return;
     }
 
-    const back = document.createElement("button");
-    back.className = "back-button";
-    back.textContent = "← Powrót do wiadomości";
-    back.onclick = () => navigate("/");
-
-    const box = document.createElement("article");
-    box.className = "detail";
-
+    const card = document.createElement("article");
+    card.className = "detail-card";
     const meta = document.createElement("div");
     meta.className = "meta";
-    meta.textContent =
-        (article.source || "Źródło nieznane") +
-        " • " + formatDate(article.published);
+    meta.textContent = (article.source || "Źródło nieznane") + " • " + formatDate(article.published);
 
     const title = document.createElement("h1");
     title.textContent = article.title;
 
-    const description = document.createElement("p");
-    description.className = "detail-description";
-    description.textContent = article.description ||
-        "Źródło nie udostępniło opisu wiadomości.";
+    const lead = document.createElement("p");
+    lead.className = "detail-lead";
+    lead.textContent = article.description || "Wydawca nie udostępnił opisu w kanale RSS.";
 
-    const note = document.createElement("p");
-    note.className = "section-note";
-    note.textContent =
-        "To podgląd wiadomości przygotowany na podstawie kanału RSS. " +
-        "Nie jest to pełny tekst artykułu.";
+    card.append(meta, title, makePhoto(article, "detail-photo"), lead);
+
+    const notice = document.createElement("div");
+    notice.className = "notice";
+    notice.textContent = "To strona wiadomości SATYRA24 z zapowiedzią z kanału RSS. Pełny tekst i oryginalne zdjęcia należą do wydawcy. SATYRA24 nie kopiuje ich bez licencji ani zgody.";
+    card.appendChild(notice);
 
     const sourceLink = document.createElement("a");
-
+    sourceLink.className = "source-link";
     try {
         const sourceURL = new URL(article.url);
-
-        if (!["https:", "http:"].includes(sourceURL.protocol)) {
-            throw new Error("Nieprawidłowy adres");
-        }
-
+        if (!['https:', 'http:'].includes(sourceURL.protocol)) throw new Error("Zły protokół");
         sourceLink.href = sourceURL.href;
         sourceLink.target = "_blank";
         sourceLink.rel = "noopener noreferrer";
-        sourceLink.textContent = "Otwórz oryginalny artykuł u wydawcy →";
+        sourceLink.textContent = "Przejdź do pełnego artykułu u wydawcy →";
     } catch {
-        sourceLink.textContent = "Adres źródła jest niedostępny.";
+        sourceLink.textContent = "Oryginalny adres artykułu jest niedostępny.";
     }
-
-    box.append(meta, title, description, note, sourceLink);
-    detail.append(back, box);
+    card.appendChild(sourceLink);
+    detail.appendChild(card);
 }
 
-async function loadPrices() {
-    const status = document.getElementById("priceStatus");
-    const container = document.getElementById("fuelPrices");
-
-    status.textContent = "Pobieranie cen paliw...";
+async function loadMarket() {
+    const status = document.getElementById("marketStatus");
+    const container = document.getElementById("marketPrices");
+    status.textContent = "Pobieranie danych GUS...";
 
     try {
         const response = await fetch(API_BASE + "/api/prices");
-
-        if (!response.ok) {
-            throw new Error("HTTP " + response.status);
-        }
-
         const data = await response.json();
+        if (!response.ok) throw new Error(data.details || data.error || "HTTP " + response.status);
+        if (!Array.isArray(data.products)) throw new Error("Nieprawidłowe dane GUS");
 
-        if (!Array.isArray(data.fuels)) {
-            throw new Error("Nieprawidłowe dane cenowe");
-        }
-
-        status.textContent =
-            "Ostatnia aktualizacja danych: " +
-            formatDate(data.updated);
-
-        container.replaceChildren();
-
-        data.fuels.forEach(fuel => {
-            const card = document.createElement("article");
-            card.className = "price-card";
-
-            const name = document.createElement("h3");
-            name.textContent = fuel.name;
-
-            const value = document.createElement("div");
-            value.className = "price-value";
-
-            value.textContent = fuel.value === null
-                ? "Brak danych"
-                : fuel.value.toFixed(2).replace(".", ",");
-
-            const unit = document.createElement("div");
-            unit.className = "price-unit";
-            unit.textContent = fuel.unit;
-
-            const trend = document.createElement("div");
-            trend.className = "price-trend";
-
-            if (fuel.trend7d !== null) {
-                const sign = fuel.trend7d > 0 ? "+" : "";
-
-                trend.textContent =
-                    "Zmiana w 7 dni: " +
-                    sign + fuel.trend7d.toFixed(2) + " zł";
-            } else {
-                trend.textContent = "Brak danych o trendzie";
-            }
-
-            card.append(name, value, unit, trend);
-            container.appendChild(card);
-        });
-
+        marketProducts = data.products;
+        status.textContent = "Dane pobrano: " + formatDate(data.fetchedAt) + " • Okresy notowań są pokazane na kartach.";
+        renderMarketPrices();
+        renderProductOptions();
+        calculateQuantity();
     } catch (error) {
-        status.textContent = "Nie udało się pobrać cen";
-
+        status.textContent = "Nie udało się pobrać cen GUS: " + error.message;
         container.replaceChildren();
-
-        const message = document.createElement("div");
-        message.id = "message";
-        message.textContent =
-            "Serwer cen jest chwilowo niedostępny. Spróbuj później.";
-
-        container.appendChild(message);
-
+        const empty = document.createElement("div");
+        empty.className = "empty-state";
+        empty.textContent = "Ceny są chwilowo niedostępne. Źródłem jest GUS BDL, więc nie pokazujemy zastępczych ani wymyślonych kwot.";
+        container.appendChild(empty);
         console.error(error);
     }
 }
 
-function showView(view) {
-    currentView = view;
+function money(value) {
+    return Number(value).toLocaleString("pl-PL", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
+}
 
-    document.getElementById("newsView")
-        .classList.toggle("hidden", view !== "news");
+function renderMarketPrices() {
+    const container = document.getElementById("marketPrices");
+    container.replaceChildren();
 
-    document.getElementById("pricesView")
-        .classList.toggle("hidden", view !== "prices");
-
-    document.getElementById("detailView")
-        .classList.add("hidden");
-
-    document.getElementById("newsTab")
-        .classList.toggle("active", view === "news");
-
-    document.getElementById("pricesTab")
-        .classList.toggle("active", view === "prices");
-
-    if (view === "prices") {
-        loadPrices();
+    if (!marketProducts.length) {
+        const empty = document.createElement("div");
+        empty.className = "empty-state";
+        empty.textContent = "Brak dostępnych cen dla wybranych produktów.";
+        container.appendChild(empty);
+        return;
     }
+
+    for (const product of marketProducts) {
+        const card = document.createElement("article");
+        card.className = "price-card";
+
+        const name = document.createElement("h3");
+        name.textContent = product.name;
+
+        const value = document.createElement("div");
+        value.className = "price-value";
+        value.textContent = money(product.unitPrice) + " zł";
+
+        const unit = document.createElement("div");
+        unit.className = "price-unit";
+        unit.textContent = "za " + product.unit;
+
+        const sourceUnit = document.createElement("div");
+        sourceUnit.className = "fine-print";
+        sourceUnit.textContent = "W źródle: " + money(product.price) + " " + product.publishedUnit;
+
+        const period = document.createElement("div");
+        period.className = "price-period";
+        period.textContent = "Notowanie: " + product.period;
+
+        card.append(name, value, unit, sourceUnit, period);
+        container.appendChild(card);
+    }
+}
+
+function renderProductOptions() {
+    const select = document.getElementById("productSelect");
+    const previous = select.value;
+    select.replaceChildren();
+
+    for (const product of marketProducts) {
+        const option = document.createElement("option");
+        option.value = product.id;
+        option.textContent = product.name + " (zł/" + product.unit + ")";
+        select.appendChild(option);
+    }
+
+    if (!marketProducts.some(product => product.id === previous) && marketProducts.length) {
+        select.value = marketProducts[0].id;
+    } else if (previous) {
+        select.value = previous;
+    }
+}
+
+function calculateQuantity() {
+    const budget = Number(document.getElementById("budget").value);
+    const productId = document.getElementById("productSelect").value;
+    const output = document.getElementById("quantityResult");
+    const details = document.getElementById("quantityDetails");
+    const product = marketProducts.find(item => item.id === productId);
+
+    if (!product || !Number.isFinite(budget) || budget < 0 || !Number.isFinite(Number(product.unitPrice)) || Number(product.unitPrice) <= 0) {
+        output.textContent = "-";
+        details.textContent = "Wpisz prawidłowy budżet i wybierz produkt z dostępną ceną.";
+        return;
+    }
+
+    const quantity = budget / Number(product.unitPrice);
+    const rounded = Math.floor(quantity * 100) / 100;
+    output.textContent = rounded.toLocaleString("pl-PL", {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 2
+    }) + " " + product.unit;
+    details.textContent = "Przy budżecie " + money(budget) + " zł i cenie " + money(product.unitPrice) + " zł/" + product.unit + ". Notowanie: " + product.period + ".";
+}
+
+function showView(view) {
+    document.getElementById("newsView").classList.toggle("hidden", view !== "news");
+    document.getElementById("marketView").classList.toggle("hidden", view !== "market");
+    document.getElementById("detailView").classList.add("hidden");
+    document.getElementById("newsTab").classList.toggle("active", view === "news");
+    document.getElementById("marketTab").classList.toggle("active", view === "market");
+    if (view === "market" && !marketProducts.length) loadMarket();
 }
 
 function handleRoute() {
     if (location.pathname.startsWith("/artykul/")) {
-        currentView = "detail";
-
         document.getElementById("newsView").classList.add("hidden");
-        document.getElementById("pricesView").classList.add("hidden");
-
-        const detail = document.getElementById("detailView");
-        detail.classList.remove("hidden");
-
+        document.getElementById("marketView").classList.add("hidden");
+        document.getElementById("detailView").classList.remove("hidden");
         document.getElementById("newsTab").classList.remove("active");
-        document.getElementById("pricesTab").classList.remove("active");
-
-        if (allArticles.length) {
-            renderArticleFromURL();
-        }
-
+        document.getElementById("marketTab").classList.remove("active");
+        if (allArticles.length) renderArticleFromURL();
         return;
     }
 
     if (location.pathname === "/ceny") {
-        showView("prices");
+        showView("market");
         return;
     }
 
@@ -713,10 +744,8 @@ function handleRoute() {
 }
 
 window.addEventListener("popstate", handleRoute);
-
 loadNews();
 handleRoute();
 </script>
-
 </body>
 </html>
