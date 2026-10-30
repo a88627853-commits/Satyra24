@@ -1,0 +1,507 @@
+
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SATYRA24 - Wiadomości rolnicze</title>
+    <meta name="description" content="SATYRA24 - najnowsze wiadomości z polskiego rolnictwa, rynku rolnego, upraw, hodowli i techniki rolniczej.">
+
+    <meta name="theme-color" content="#173d2b">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f3f5f2;
+            color: #202820;
+        }
+
+        header {
+            background: #173d2b;
+            color: white;
+            border-bottom: 4px solid #c5a34a;
+        }
+
+        .topbar {
+            max-width: 1250px;
+            margin: auto;
+            padding: 22px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .logo {
+            font-size: 34px;
+            font-weight: 900;
+            letter-spacing: 2px;
+        }
+
+        .logo span {
+            color: #d8bd69;
+        }
+
+        .subtitle {
+            font-size: 12px;
+            color: #d2dfd3;
+            margin-top: 5px;
+            letter-spacing: 2px;
+        }
+
+        .date {
+            font-size: 13px;
+            color: #d2dfd3;
+        }
+
+        nav {
+            background: #102d20;
+        }
+
+        .nav-inner {
+            max-width: 1250px;
+            margin: auto;
+            display: flex;
+            gap: 28px;
+            padding: 15px 20px;
+            overflow-x: auto;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        nav a:hover {
+            color: #d8bd69;
+        }
+
+        .container {
+            max-width: 1250px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .announcement {
+            background: #fff4d5;
+            border-left: 5px solid #c5a34a;
+            padding: 14px;
+            margin-bottom: 25px;
+            font-size: 13px;
+        }
+
+        .section-title {
+            font-size: 23px;
+            margin-bottom: 20px;
+            border-left: 5px solid #36784b;
+            padding-left: 12px;
+        }
+
+        .hero {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            background: #173d2b;
+            color: white;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 35px;
+        }
+
+        .hero-content {
+            padding: 40px;
+        }
+
+        .hero-label {
+            display: inline-block;
+            background: #c5a34a;
+            color: #173d2b;
+            font-weight: bold;
+            padding: 7px 12px;
+            font-size: 11px;
+            margin-bottom: 20px;
+        }
+
+        .hero h1 {
+            font-size: 36px;
+            line-height: 1.2;
+            margin-bottom: 18px;
+        }
+
+        .hero p {
+            color: #d2dfd3;
+            line-height: 1.7;
+        }
+
+        .hero-image {
+            min-height: 280px;
+            background:
+                linear-gradient(90deg, #173d2b 0%, transparent 80%),
+                linear-gradient(135deg, #63844c, #c5a34a);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 90px;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 1fr 310px;
+            gap: 25px;
+        }
+
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px;
+        }
+
+        .news-card {
+            background: white;
+            border: 1px solid #e0e5df;
+            border-radius: 7px;
+            padding: 22px;
+            transition: 0.2s;
+        }
+
+        .news-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 18px #00000012;
+        }
+
+        .category {
+            color: #36784b;
+            font-size: 11px;
+            font-weight: 900;
+            letter-spacing: 1px;
+        }
+
+        .news-card h3 {
+            font-size: 19px;
+            margin: 12px 0;
+            line-height: 1.4;
+        }
+
+        .news-card p {
+            color: #687468;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .news-date {
+            margin-top: 16px;
+            font-size: 11px;
+            color: #929a92;
+        }
+
+        .sidebar {
+            background: white;
+            border: 1px solid #e0e5df;
+            border-radius: 7px;
+            padding: 20px;
+            height: fit-content;
+        }
+
+        .sidebar h2 {
+            font-size: 19px;
+            margin-bottom: 18px;
+        }
+
+        .sidebar-item {
+            padding: 15px 0;
+            border-bottom: 1px solid #e5e9e4;
+        }
+
+        .sidebar-item:last-child {
+            border-bottom: none;
+        }
+
+        .sidebar-item b {
+            display: block;
+            font-size: 14px;
+            margin-top: 7px;
+            line-height: 1.5;
+        }
+
+        .search {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid #d5ddd4;
+            border-radius: 5px;
+            margin-bottom: 25px;
+            font-size: 14px;
+        }
+
+        .search:focus {
+            outline: 2px solid #36784b;
+        }
+
+        .empty {
+            display: none;
+            padding: 20px;
+            color: #687468;
+            background: white;
+            grid-column: 1 / -1;
+        }
+
+        footer {
+            background: #102d20;
+            color: white;
+            padding: 35px 20px;
+            margin-top: 55px;
+            text-align: center;
+        }
+
+        footer p {
+            color: #b8c8ba;
+            font-size: 13px;
+            margin-top: 10px;
+        }
+
+        @media(max-width: 850px) {
+            .layout,
+            .hero {
+                grid-template-columns: 1fr;
+            }
+
+            .hero-image {
+                min-height: 170px;
+            }
+
+            .hero h1 {
+                font-size: 29px;
+            }
+        }
+
+        @media(max-width: 550px) {
+            .news-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .logo {
+                font-size: 27px;
+            }
+
+            .hero-content {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <div class="topbar">
+        <div>
+            <div class="logo">SATYRA<span>24</span> 🌾</div>
+            <div class="subtitle">PORTAL INFORMACJI ROLNICZYCH</div>
+        </div>
+
+        <div class="date" id="currentDate"></div>
+    </div>
+
+    <nav>
+        <div class="nav-inner">
+            <a href="#glowna">STRONA GŁÓWNA</a>
+            <a href="#wiadomosci">WIADOMOŚCI</a>
+            <a href="#uprawy">UPRAWY</a>
+            <a href="#hodowla">HODOWLA</a>
+            <a href="#rynek">RYNEK ROLNY</a>
+            <a href="#maszyny">MASZYNY</a>
+            <a href="#pogoda">POGODA</a>
+        </div>
+    </nav>
+</header>
+
+<div class="container">
+
+    <div class="announcement">
+        🌾 SATYRA24 – niezależny portal poświęcony polskiemu rolnictwu.
+        Informacje, rynek rolny i życie gospodarstw.
+    </div>
+
+    <section id="glowna" class="hero">
+        <div class="hero-content">
+            <span class="hero-label">PORTAL ROLNICZY</span>
+
+            <h1>Wszystko, co ważne dla polskiego rolnictwa.</h1>
+
+            <p>
+                Aktualności z gospodarstw, informacje o uprawach,
+                hodowli, cenach produktów rolnych i nowoczesnych
+                maszynach.
+            </p>
+        </div>
+
+        <div class="hero-image">
+            🚜
+        </div>
+    </section>
+
+    <input
+        type="search"
+        class="search"
+        id="search"
+        placeholder="🔎 Szukaj wiadomości rolniczych..."
+    >
+
+    <div class="layout">
+
+        <main>
+            <h2 class="section-title" id="wiadomosci">
+                Najnowsze wiadomości
+            </h2>
+
+            <div class="news-grid" id="newsGrid">
+
+                <article class="news-card" id="uprawy">
+                    <span class="category">UPRAWY</span>
+                    <h3>Nowy sezon rolniczy przed gospodarstwami</h3>
+                    <p>
+                        Przygotowania do kolejnych prac polowych.
+                        Rolnicy planują zasiewy i analizują koszty produkcji.
+                    </p>
+                    <div class="news-date">ARTYKUŁ PRZYKŁADOWY</div>
+                </article>
+
+                <article class="news-card" id="rynek">
+                    <span class="category">RYNEK ROLNY</span>
+                    <h3>Ceny zbóż pod obserwacją producentów</h3>
+                    <p>
+                        Rynek zbóż pozostaje ważnym tematem dla
+                        polskich gospodarstw.
+                    </p>
+                    <div class="news-date">ARTYKUŁ PRZYKŁADOWY</div>
+                </article>
+
+                <article class="news-card" id="hodowla">
+                    <span class="category">HODOWLA</span>
+                    <h3>Hodowcy analizują koszty utrzymania zwierząt</h3>
+                    <p>
+                        Pasze, energia i warunki produkcji
+                        pozostają istotnymi wyzwaniami.
+                    </p>
+                    <div class="news-date">ARTYKUŁ PRZYKŁADOWY</div>
+                </article>
+
+                <article class="news-card" id="maszyny">
+                    <span class="category">MASZYNY</span>
+                    <h3>Nowoczesne ciągniki zmieniają gospodarstwa</h3>
+                    <p>
+                        Automatyzacja i nowe technologie
+                        coraz mocniej wpływają na rolnictwo.
+                    </p>
+                    <div class="news-date">ARTYKUŁ PRZYKŁADOWY</div>
+                </article>
+
+                <article class="news-card" id="pogoda">
+                    <span class="category">POGODA</span>
+                    <h3>Warunki atmosferyczne a prace polowe</h3>
+                    <p>
+                        Pogoda ma ogromne znaczenie przy planowaniu
+                        prac w gospodarstwie.
+                    </p>
+                    <div class="news-date">ARTYKUŁ PRZYKŁADOWY</div>
+                </article>
+
+                <article class="news-card">
+                    <span class="category">ROLNICTWO POLSKA</span>
+                    <h3>Polskie gospodarstwa w centrum uwagi</h3>
+                    <p>
+                        Co dzieje się na polskiej wsi?
+                        Przegląd tematów ważnych dla producentów rolnych.
+                    </p>
+                    <div class="news-date">ARTYKUŁ PRZYKŁADOWY</div>
+                </article>
+
+                <div class="empty" id="empty">
+                    Nie znaleziono wiadomości.
+                </div>
+
+            </div>
+        </main>
+
+        <aside class="sidebar">
+            <h2>NAJWAŻNIEJSZE TEMATY</h2>
+
+            <div class="sidebar-item">
+                <span class="category">RYNEK ROLNY</span>
+                <b>Ceny zbóż i opłacalność produkcji</b>
+            </div>
+
+            <div class="sidebar-item">
+                <span class="category">UPRAWY</span>
+                <b>Stan pól i przygotowania do zasiewów</b>
+            </div>
+
+            <div class="sidebar-item">
+                <span class="category">HODOWLA</span>
+                <b>Produkcja mleka i żywca</b>
+            </div>
+
+            <div class="sidebar-item">
+                <span class="category">TECHNIKA</span>
+                <b>Nowości ze świata maszyn rolniczych</b>
+            </div>
+
+            <div class="sidebar-item">
+                <span class="category">WSPARCIE</span>
+                <b>Dopłaty i programy dla rolników</b>
+            </div>
+        </aside>
+
+    </div>
+
+</div>
+
+<footer>
+    <h2>SATYRA24 🌾</h2>
+    <p>Portal poświęcony polskiemu rolnictwu.</p>
+    <p>© 2026 SATYRA24. Wszelkie prawa zastrzeżone.</p>
+</footer>
+
+<script>
+    // Aktualna data
+    const date = new Date();
+
+    document.getElementById("currentDate").textContent =
+        date.toLocaleDateString("pl-PL", {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric"
+        });
+
+    // Wyszukiwarka wiadomości
+    const search = document.getElementById("search");
+    const cards = document.querySelectorAll(".news-card");
+    const empty = document.getElementById("empty");
+
+    search.addEventListener("input", function() {
+        const query = search.value.toLowerCase();
+        let visible = 0;
+
+        cards.forEach(card => {
+            const match = card.textContent.toLowerCase().includes(query);
+
+            card.style.display = match ? "" : "none";
+
+            if (match) visible++;
+        });
+
+        empty.style.display = visible === 0 ? "block" : "none";
+    });
+</script>
+
+</body>
+</html>
